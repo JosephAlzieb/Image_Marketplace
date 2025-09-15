@@ -1,0 +1,99 @@
+erDiagram
+    User {
+        UUID id PK
+        string email UK
+        string passwordHash
+        string firstName
+        string lastName
+        UserRole role
+        UserStatus status
+        decimal totalSales
+        decimal commissionRate
+    }
+
+    Image {
+        UUID id PK
+        string title
+        string fileUrl
+        string thumbnailUrl
+        UUID uploaderId FK
+        UUID currentOwnerId FK
+        UUID categoryId FK
+        decimal price
+        string currency
+        SaleType saleType
+        boolean isAvailable
+        integer viewCount
+        integer downloadCount
+    }
+
+    Transaction {
+        UUID id PK
+        UUID imageId FK
+        UUID buyerId FK
+        UUID sellerId FK
+        decimal grossAmount
+        decimal platformCommission
+        decimal netToSeller
+        PaymentStatus paymentStatus
+        string paymentIntentId
+    }
+
+    OwnershipHistory {
+        UUID id PK
+        UUID imageId FK
+        UUID previousOwnerId FK
+        UUID newOwnerId FK
+        UUID transactionId FK
+        TransferType transferType
+        LocalDateTime transferDate
+        decimal purchasePrice
+    }
+
+    Category {
+        UUID id PK
+        string name UK
+        string description
+        UUID parentId FK
+        boolean isActive
+    }
+
+    AuctionBid {
+        UUID id PK
+        UUID imageId FK
+        UUID bidderId FK
+        decimal bidAmount
+        LocalDateTime bidTime
+        boolean isWinningBid
+    }
+
+    Review {
+        UUID id PK
+        UUID reviewerId FK
+        UUID reviewedUserId FK
+        UUID imageId FK
+        integer rating
+        string reviewText
+        ReviewType reviewType
+    }
+
+%% Relationships
+    User ||--o{ Image : "uploads"
+    User ||--o{ Image : "owns"
+    User ||--o{ Transaction : "buys"
+    User ||--o{ Transaction : "sells"
+    User ||--o{ AuctionBid : "bids"
+    User ||--o{ Review : "writes"
+    User ||--o{ Review : "receives"
+    User ||--o{ OwnershipHistory : "previous_owner"
+    User ||--o{ OwnershipHistory : "new_owner"
+
+    Category ||--o{ Category : "parent"
+    Category ||--o{ Image : "categorizes"
+
+    Image ||--o{ Transaction : "sold_in"
+    Image ||--o{ OwnershipHistory : "has_history"
+    Image ||--o{ AuctionBid : "has_bids"
+    Image ||--o{ Review : "reviewed"
+
+    Transaction ||--|| OwnershipHistory : "creates"

@@ -1,0 +1,53 @@
+@startuml Digital_Marketplace_Entities
+
+!define primary_key(field) <b><color:red>field</color></b>
+!define foreign_key(field) <color:blue>field</color>
+!define unique_key(field) <color:green>field</color>
+
+entity User {
+  primary_key(id) : UUID
+  unique_key(email) : String
+  passwordHash : String
+  firstName : String
+  lastName : String
+  role : UserRole
+  status : UserStatus
+  totalSales : BigDecimal
+  commissionRate : BigDecimal
+}
+
+entity Image {
+  primary_key(id) : UUID
+  title : String
+  fileUrl : String
+  thumbnailUrl : String
+  foreign_key(uploaderId) : UUID
+  foreign_key(currentOwnerId) : UUID
+  foreign_key(categoryId) : UUID
+  price : BigDecimal
+  currency : String
+  saleType : SaleType
+  isAvailable : Boolean
+  viewCount : Integer
+  downloadCount : Integer
+}
+
+entity Transaction {
+  primary_key(id) : UUID
+  foreign_key(imageId) : UUID
+  foreign_key(buyerId) : UUID
+  foreign_key(sellerId) : UUID
+  grossAmount : BigDecimal
+  platformCommission : BigDecimal
+  netToSeller : BigDecimal
+  paymentStatus : PaymentStatus
+  paymentIntentId : String
+}
+
+User ||--o{ Image : uploads
+User ||--o{ Image : owns
+User ||--o{ Transaction : buys
+User ||--o{ Transaction : sells
+Image ||--o{ Transaction : sold_in
+
+@enduml
