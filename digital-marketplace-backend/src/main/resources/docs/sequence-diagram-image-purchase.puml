@@ -1,0 +1,41 @@
+@startuml
+actor Käufer
+actor Verkäufer
+actor Admin
+participant "Image" as Image
+participant "Transaction" as Transaction
+participant "OwnershipHistory" as OwnershipHistory
+participant "Review" as Review
+participant "License" as License
+participant "System" as System
+
+Käufer -> Image : Bild auswählen
+alt Bild nicht verfügbar
+    Image -> Käufer : Fehlermeldung: Bild nicht verfügbar
+    Käufer -> Verkäufer : Anfrage abgebrochen
+else Bild verfügbar
+    Käufer -> Verkäufer : Kaufanfrage senden
+    Verkäufer -> Transaction : Transaktion anlegen
+    Transaction -> Käufer : Zahlungsaufforderung
+    Käufer -> Transaction : Zahlung durchführen
+    alt Zahlung fehlgeschlagen
+        Transaction -> Käufer : Fehlermeldung: Zahlung fehlgeschlagen
+        Käufer -> Verkäufer : Anfrage abgebrochen
+    else Zahlung erfolgreich
+        Transaction -> Verkäufer : Zahlungsbestätigung
+        Transaction -> OwnershipHistory : Besitz übertragen
+        OwnershipHistory -> Käufer : Besitz bestätigt
+        Transaction -> License : Lizenz übertragen
+        License -> Käufer : Lizenzdetails
+        System -> Image : Verfügbarkeit auf "nicht verfügbar" setzen
+        Käufer -> Review : Bewertung abgeben
+        Review -> Image : Bewertung speichern
+    end
+end
+
+alt Streitfall oder Report
+    Käufer -> Admin : Problem melden
+    Admin -> Transaction : Überprüfung/Intervention
+    Admin -> Käufer : Ergebnis/Entscheidung
+end
+@enduml

@@ -1,0 +1,47 @@
+@startuml
+actor Besitzer
+actor Käufer
+actor Bieter
+actor Admin
+participant "Image" as Image
+participant "Collection" as Collection
+participant "Auction" as Auction
+participant "AuctionBid" as AuctionBid
+participant "Transaction" as Transaction
+participant "OwnershipHistory" as OwnershipHistory
+participant "System" as System
+
+== Collection verwalten ==
+Besitzer -> Image : Bild auswählen
+Besitzer -> Collection : Bild hinzufügen
+Collection -> System : Bild zu Collection speichern
+System -> Besitzer : Bestätigung
+Besitzer -> Collection : Bild entfernen
+Collection -> System : Bild aus Collection entfernen
+System -> Besitzer : Bestätigung
+
+== Auktion ==
+Besitzer -> Auction : Bild zur Auktion einstellen
+Auction -> System : Auktion starten
+Bieter -> Auction : Gebot abgeben
+Auction -> AuctionBid : Gebot speichern
+... (mehrere Gebote möglich) ...
+alt Auktion endet
+    Auction -> Bieter : Zuschlag an Höchstbietenden
+    Auction -> Transaction : Transaktion anlegen
+    Transaction -> OwnershipHistory : Besitz übertragen
+    OwnershipHistory -> Bieter : Besitz bestätigt
+    System -> Image : Verfügbarkeit aktualisieren
+else Auktion abgebrochen
+    Auction -> Besitzer : Auktion beendet, kein Verkauf
+end
+
+== Resell ==
+Besitzer -> Käufer : Bild zum Verkauf anbieten
+Käufer -> Transaction : Kauf durchführen
+Transaction -> OwnershipHistory : Besitz übertragen
+OwnershipHistory -> Käufer : Besitz bestätigt
+System -> Image : Verfügbarkeit aktualisieren
+
+@enduml
+

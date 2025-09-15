@@ -44,10 +44,70 @@ entity Transaction {
   paymentIntentId : String
 }
 
+entity Review {
+  primary_key(id) : UUID
+  foreign_key(imageId) : UUID
+  foreign_key(userId) : UUID
+  rating : BigDecimal
+  comment : String
+  createdAt : LocalDateTime
+}
+
+entity ImageReport {
+  primary_key(id) : UUID
+  foreign_key(imageId) : UUID
+  foreign_key(reporterId) : UUID
+  reason : String
+  description : String
+  reportedAt : LocalDateTime
+}
+
+entity Collection {
+  primary_key(id) : UUID
+  name : String
+  description : String
+  foreign_key(ownerId) : UUID
+}
+
+entity OwnershipHistory {
+  primary_key(id) : UUID
+  foreign_key(imageId) : UUID
+  foreign_key(ownerId) : UUID
+  transferDate : LocalDateTime
+  transferType : TransferType
+}
+
+entity AuctionBid {
+  primary_key(id) : UUID
+  foreign_key(imageId) : UUID
+  foreign_key(bidderId) : UUID
+  bidAmount : BigDecimal
+  bidTime : LocalDateTime
+}
+
+entity Category {
+  primary_key(id) : UUID
+  name : String
+  description : String
+}
+
 User ||--o{ Image : uploads
 User ||--o{ Image : owns
 User ||--o{ Transaction : buys
 User ||--o{ Transaction : sells
 Image ||--o{ Transaction : sold_in
+Image ||--o{ Review : reviews
+Image ||--o{ ImageReport : reports
+Image ||--o{ OwnershipHistory : history
+Image ||--o{ AuctionBid : bids
+Image ||--o{ Collection : collections
+Image }o--|| Category : category
+Collection ||--o{ Image : images
+User ||--o{ Review : writes
+User ||--o{ ImageReport : reports
+User ||--o{ Collection : owns
+User ||--o{ OwnershipHistory : owns
+User ||--o{ AuctionBid : bids
+Category ||--o{ Image : images
 
 @enduml
