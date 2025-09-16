@@ -1,0 +1,31 @@
+🔍 Kern-Beziehungen:
+
+👤 User (Zentrale Entität):
+Kann Bilder uploaden (uploader)
+Kann Bilder besitzen (currentOwner)
+Kann kaufen und verkaufen (Transaction)
+Kann bieten bei Auktionen (AuctionBid)
+Kann Reviews schreiben/empfangen
+
+🖼️ Image (Hauptprodukt):
+Hat einen Uploader und aktuellen Besitzer
+Kann mehrfach verkauft werden (Resales)
+Hat Besitzhistorie (OwnershipHistory)
+Kann Auktionsgebote haben
+Gehört zu einer Kategorie
+
+💰 Transaction (Geschäftslogik):
+Verbindet Käufer, Verkäufer und Bild
+Berechnet Kommission und Netto-Erlös
+Erstellt automatisch OwnershipHistory
+
+📊 OwnershipHistory (Audit Trail):
+Vollständige Besitzkette jedes Bildes
+Verknüpft mit Transaction für Käufe
+Unterstützt verschiedene Transfer-Typen
+
+🎯 Wichtige Design-Prinzipien:
+Trennung von Upload und Besitz: Ein User kann ein Bild uploaden, aber ein anderer kann es besitzen
+Vollständige Audit-Spur: Jeder Besitzwechsel wird dokumentiert
+Flexible Verkaufsarten: Fixed Price, Auction, Offers
+Kommissions-System: 10% Platform-Gebühr wird automatisch berechnet
