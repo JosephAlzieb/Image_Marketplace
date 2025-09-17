@@ -150,92 +150,76 @@ public class User extends BaseEntity {
     public String getFullName() {
         return firstName + " " + lastName;
     }
-    
-    public boolean isEmailVerified() {
-        return emailVerified != null && emailVerified;
+
+    public void addSale(BigDecimal grossAmount, BigDecimal commission) {
+        if (grossAmount != null) {
+            this.totalSales = this.totalSales.add(grossAmount);
+        }
+        if (commission != null) {
+            this.totalEarnings = this.totalEarnings.add(grossAmount.subtract(commission));
+        }
     }
-    
+
+    public void setEmailVerificationToken(String token) {
+        this.emailVerificationToken = token;
+    }
+
+    public Boolean getEmailVerified() {
+        return emailVerified;
+    }
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+
     public boolean isSeller() {
-        return role == UserRole.SELLER || role == UserRole.PREMIUM_SELLER || role == UserRole.ADMIN;
+        return role == UserRole.SELLER || role == UserRole.PREMIUM_SELLER;
     }
     
-    public boolean isAdmin() {
-        return role == UserRole.ADMIN;
-    }
-    
-    public void upgradeToSeller() {
-        this.role = UserRole.SELLER;
-    }
-    
-    public void addSale(BigDecimal amount, BigDecimal commission) {
-        if (this.totalSales == null) this.totalSales = BigDecimal.ZERO;
-        if (this.totalEarnings == null) this.totalEarnings = BigDecimal.ZERO;
-        
-        this.totalSales = this.totalSales.add(amount);
-        this.totalEarnings = this.totalEarnings.add(amount.subtract(commission));
-    }
-    
-    // Getters and Setters
+    // Getter/Setter für alle Felder (nur die wichtigsten für Service)
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    
-    public String getPasswordHash() { return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
-    
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
-    
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
-    
-    public UserRole getRole() { return role; }
-    public void setRole(UserRole role) { this.role = role; }
-    
-    public String getProfilePictureUrl() { return profilePictureUrl; }
-    public void setProfilePictureUrl(String profilePictureUrl) { this.profilePictureUrl = profilePictureUrl; }
-    
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }
-    
-    public String getCountryCode() { return countryCode; }
-    public void setCountryCode(String countryCode) { this.countryCode = countryCode; }
-    
-    public String getVatNumber() { return vatNumber; }
-    public void setVatNumber(String vatNumber) { this.vatNumber = vatNumber; }
-    
-    public String getStripeCustomerId() { return stripeCustomerId; }
-    public void setStripeCustomerId(String stripeCustomerId) { this.stripeCustomerId = stripeCustomerId; }
-    
-    public String getStripeAccountId() { return stripeAccountId; }
-    public void setStripeAccountId(String stripeAccountId) { this.stripeAccountId = stripeAccountId; }
-    
-    public Boolean getEmailVerified() { return emailVerified; }
-    public void setEmailVerified(Boolean emailVerified) { this.emailVerified = emailVerified; }
-    
+    public UserRole getRole() { return role; }
+    public void setRole(UserRole role) { this.role = role; }
     public UserStatus getStatus() { return status; }
     public void setStatus(UserStatus status) { this.status = status; }
-    
+    public String getProfilePictureUrl() { return profilePictureUrl; }
+    public void setProfilePictureUrl(String url) { this.profilePictureUrl = url; }
+    public String getCountryCode() { return countryCode; }
+    public void setCountryCode(String code) { this.countryCode = code; }
     public BigDecimal getSellerRating() { return sellerRating; }
-    public void setSellerRating(BigDecimal sellerRating) { this.sellerRating = sellerRating; }
-    
+    public void setSellerRating(BigDecimal rating) { this.sellerRating = rating; }
     public BigDecimal getTotalSales() { return totalSales; }
-    public void setTotalSales(BigDecimal totalSales) { this.totalSales = totalSales; }
-    
+    public void setTotalSales(BigDecimal sales) { this.totalSales = sales; }
     public BigDecimal getTotalEarnings() { return totalEarnings; }
-    public void setTotalEarnings(BigDecimal totalEarnings) { this.totalEarnings = totalEarnings; }
-    
-    public BigDecimal getCommissionRate() { return commissionRate; }
-    public void setCommissionRate(BigDecimal commissionRate) { this.commissionRate = commissionRate; }
-    
-    // Additional getters/setters for other fields...
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-    
-    public Boolean getPhoneVerified() { return phoneVerified; }
-    public void setPhoneVerified(Boolean phoneVerified) { this.phoneVerified = phoneVerified; }
-    
+    public void setTotalEarnings(BigDecimal earnings) { this.totalEarnings = earnings; }
+    public LocalDateTime getCreatedAt() { return super.getCreatedAt(); }
     public LocalDateTime getLastLoginAt() { return lastLoginAt; }
     public void setLastLoginAt(LocalDateTime lastLoginAt) { this.lastLoginAt = lastLoginAt; }
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public String getVatNumber() { return vatNumber; }
+    public void setVatNumber(String vatNumber) { this.vatNumber = vatNumber; }
+    public BigDecimal getCommissionRate() { return commissionRate; }
+    public void setCommissionRate(BigDecimal commissionRate) { this.commissionRate = commissionRate; }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    // Additional getters/setters for other fields...
+    public Boolean getPhoneVerified() { return phoneVerified; }
+    public void setPhoneVerified(Boolean phoneVerified) { this.phoneVerified = phoneVerified; }
     
     public Map<String, Object> getPreferences() { return preferences; }
     public void setPreferences(Map<String, Object> preferences) { this.preferences = preferences; }

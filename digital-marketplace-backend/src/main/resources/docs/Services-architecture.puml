@@ -1,0 +1,98 @@
+@startuml
+!define SERVICE_COLOR B3E5FC
+!define REPO_COLOR C8E6C9
+
+package "Services" {
+  component [UserService] as US #SERVICE_COLOR
+  component [ImageService] as IS #SERVICE_COLOR
+  component [TransactionService] as TS #SERVICE_COLOR
+  component [AuctionService] as AS #SERVICE_COLOR
+  component [NotificationService] as NS #SERVICE_COLOR
+  component [EmailService] as ES #SERVICE_COLOR
+  component [AuditService] as AUS #SERVICE_COLOR
+  component [FileStorageService] as FSS #SERVICE_COLOR
+  component [PaymentService] as PS #SERVICE_COLOR
+}
+
+package "Repositories" {
+  component [UserRepository] as UR #REPO_COLOR
+  component [ImageRepository] as IR #REPO_COLOR
+  component [TransactionRepository] as TR #REPO_COLOR
+  component [AuctionBidRepository] as ABR #REPO_COLOR
+  component [NotificationRepository] as NR #REPO_COLOR
+  component [CategoryRepository] as CR #REPO_COLOR
+  component [OwnershipHistoryRepository] as OHR #REPO_COLOR
+}
+
+' Service → Repository
+US --> UR
+IS --> IR
+IS --> CR
+TS --> TR
+TS --> OHR
+AS --> ABR
+AS --> IR
+NS --> NR
+
+' Service → Service
+IS --> US
+IS --> FSS
+IS --> AUS
+TS --> US
+TS --> IS
+TS --> PS
+TS --> NS
+TS --> ES
+TS --> AUS
+AS --> US
+AS --> TS
+AS --> NS
+AS --> ES
+NS --> US
+ES --> US
+
+@enduml
+
+/'UserService (US)
+Verwaltet Benutzer: Registrierung, Login, Profildaten.
+→ spricht mit UserRepository für persistente Daten.
+
+ImageService (IS)
+Alles rund um Bilder: Upload, Kategorien, Metadaten.
+→ spricht mit ImageRepository und CategoryRepository.
+→ nutzt FileStorageService (FSS) für Dateien.
+→ loggt Aktionen über AuditService.
+→ redet mit UserService (z. B. welcher User das Bild hochgeladen hat).
+
+TransactionService (TS)
+Verwaltung von Kauf- und Verkaufsvorgängen.
+→ greift auf TransactionRepository und OwnershipHistoryRepository zu.
+→ spricht mit UserService (wer kauft/verkauft), ImageService (welches Bild),
+PaymentService (Zahlungen), NotificationService und EmailService (Bestätigungen).
+→ meldet an AuditService.
+
+AuctionService (AS)
+Verwaltung von Auktionen und Geboten.
+→ nutzt AuctionBidRepository (Gebote), ImageRepository (auf welches Bild wird geboten).
+→ redet mit UserService, TransactionService, NotificationService, EmailService.
+
+NotificationService (NS)
+Zuständig für System-Benachrichtigungen (z. B. Popups, In-App Nachrichten).
+→ speichert in NotificationRepository.
+→ spricht mit UserService, damit Nachrichten den richtigen Usern zugeordnet werden.
+
+EmailService (ES)
+Sendet E-Mails (z. B. Kaufbestätigung).
+→ kennt den UserService für Empfängerdaten.
+
+AuditService (AUS)
+Loggt wichtige Aktionen für Nachvollziehbarkeit.
+→ wird von ImageService und TransactionService aufgerufen.
+
+FileStorageService (FSS)
+Hält die physische Speicherung der Bilder (z. B. AWS S3, lokale Festplatte).
+→ wird nur vom ImageService genutzt.
+
+PaymentService (PS)
+Schnittstelle zu externen Zahlungssystemen.
+→ wird vom TransactionS'/ervice aufgerufen.
