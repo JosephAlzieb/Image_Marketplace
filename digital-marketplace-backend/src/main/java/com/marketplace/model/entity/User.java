@@ -12,9 +12,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Table(name = "users", indexes = {
@@ -135,6 +133,9 @@ public class User extends BaseEntity {
     
     @OneToMany(mappedBy = "bidder", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AuctionBid> bids = new ArrayList<>();
+
+    @OneToMany(mappedBy = "image", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ImageReaction> reactions = new HashSet<>();
     
     // Constructors
     public User() {}
@@ -236,4 +237,79 @@ public class User extends BaseEntity {
     
     public List<Transaction> getSales() { return sales; }
     public void setSales(List<Transaction> sales) { this.sales = sales; }
+
+    public String getStripeCustomerId() {
+        return stripeCustomerId;
+    }
+
+    public void setStripeCustomerId(String stripeCustomerId) {
+        this.stripeCustomerId = stripeCustomerId;
+    }
+
+    public String getStripeAccountId() {
+        return stripeAccountId;
+    }
+
+    public void setStripeAccountId(String stripeAccountId) {
+        this.stripeAccountId = stripeAccountId;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public String getEmailVerificationToken() {
+        return emailVerificationToken;
+    }
+
+    public String getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+    }
+
+    public LocalDateTime getPasswordResetExpiresAt() {
+        return passwordResetExpiresAt;
+    }
+
+    public void setPasswordResetExpiresAt(LocalDateTime passwordResetExpiresAt) {
+        this.passwordResetExpiresAt = passwordResetExpiresAt;
+    }
+
+    public List<Review> getGivenReviews() {
+        return givenReviews;
+    }
+
+    public void setGivenReviews(List<Review> givenReviews) {
+        this.givenReviews = givenReviews;
+    }
+
+    public List<Review> getReceivedReviews() {
+        return receivedReviews;
+    }
+
+    public void setReceivedReviews(List<Review> receivedReviews) {
+        this.receivedReviews = receivedReviews;
+    }
+
+    public List<AuctionBid> getBids() {
+        return bids;
+    }
+
+    public void setBids(List<AuctionBid> bids) {
+        this.bids = bids;
+    }
+
+    public Set<ImageReaction> getReactions() {
+        return reactions;
+    }
+
+    public void setReactions(Set<ImageReaction> reactions) {
+        this.reactions = reactions;
+    }
+
+    public void setProfileCompleted(Boolean profileCompleted) {
+    }
 }

@@ -13,9 +13,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Table(name = "images", indexes = {
@@ -193,7 +191,10 @@ public class Image extends BaseEntity {
     
     @ManyToMany(mappedBy = "images", fetch = FetchType.LAZY)
     private List<Collection> collections = new ArrayList<>();
-    
+
+    @OneToMany(mappedBy = "image", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ImageReaction> reactions = new HashSet<>();
+
     // Constructors
     public Image() {}
     
@@ -402,4 +403,36 @@ public class Image extends BaseEntity {
     
     public List<Collection> getCollections() { return collections; }
     public void setCollections(List<Collection> collections) { this.collections = collections; }
+
+    public Boolean getAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(Boolean available) {
+        isAvailable = available;
+    }
+
+    public Boolean getFeatured() {
+        return isFeatured;
+    }
+
+    public void setFeatured(Boolean featured) {
+        isFeatured = featured;
+    }
+
+    public Boolean getMatureContent() {
+        return isMatureContent;
+    }
+
+    public void setMatureContent(Boolean matureContent) {
+        isMatureContent = matureContent;
+    }
+
+    public Set<ImageReaction> getReactions() {
+        return reactions;
+    }
+
+    public void setReactions(Set<ImageReaction> reactions) {
+        this.reactions = reactions;
+    }
 }

@@ -29,11 +29,18 @@ public interface ImageRepository extends JpaRepository<Image, UUID>, JpaSpecific
     }
 
     @Query("select (count(t) > 0) from Transaction t where t.image.id = :imageId and t.buyer.id = :userId and t.paymentStatus = com.marketplace.model.enums.PaymentStatus.COMPLETED")
-    boolean hasUserPurchasedImage(@Param("imageId") UUID imageId, @Param("userId") UUID userId);
+    boolean hasUserPurchased(@Param("imageId") UUID imageId, @Param("userId") UUID userId);
+
+    // Additional methods for AdminService
+    long countByCreatedAtAfter(java.time.LocalDateTime date);
+
+    long countByUploaderId(UUID uploaderId);
 
     @Query(value = "select i from Image i where i.isAvailable = true and i.isMatureContent = false order by (i.viewCount + (i.downloadCount * 2) + (i.likeCount * 3)) desc",
            countQuery = "select count(i) from Image i where i.isAvailable = true and i.isMatureContent = false")
     Page<Image> findTrendingImages(Pageable pageable);
 
     Page<Image> findByIsFeaturedTrueAndIsAvailableTrue(Pageable pageable);
+
+    Page<Image> findByUploaderIdAndIsAvailableTrueAndIsMatureContentFalse(UUID userId, Pageable pageable);
 }

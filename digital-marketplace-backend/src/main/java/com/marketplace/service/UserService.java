@@ -6,6 +6,7 @@ import com.marketplace.exception.UnauthorizedException;
 import com.marketplace.model.dto.response.UserProfileResponse;
 import com.marketplace.model.dto.request.UserProfileUpdateRequest;
 import com.marketplace.model.dto.request.UserRegistrationRequest;
+import com.marketplace.model.dto.response.UserStatusResponse;
 import com.marketplace.model.entity.User;
 import com.marketplace.model.enums.UserRole;
 import com.marketplace.model.enums.UserStatus;
@@ -182,11 +183,12 @@ public class UserService {
      * Get all sellers with pagination
      */
     @Transactional(readOnly = true)
-    public Page<User> getAllSellers(Pageable pageable) {
-        return userRepository.findByRoleIn(
+    public Page<UserProfileResponse> getAllSellers(Pageable pageable) {
+        var sellers = userRepository.findByRoleIn(
             java.util.Arrays.asList(UserRole.SELLER, UserRole.PREMIUM_SELLER), 
             pageable
         );
+        return sellers.map(this::mapToProfileResponse);
     }
     
     /**
@@ -300,5 +302,27 @@ public class UserService {
         response.setCreatedAt(user.getCreatedAt());
         response.setLastLoginAt(user.getLastLoginAt());
         return response;
+    }
+
+    public UserProfileResponse getPublicUserProfile(UUID userId) {
+        User user = getUserById(userId);
+        return mapToProfileResponse(user);
+    }
+
+    public UserStatusResponse getUserPublicStats(UUID userId) {
+        User user = getUserById(userId);
+        UserStatusResponse response = new UserStatusResponse();
+        response.setStatus(user.getStatus());
+        response.setSellerRating(user.getSellerRating());
+        response.setTotalSales(user.getTotalSales());
+        response.setTotalEarnings(user.getTotalEarnings());
+        return response;
+    }
+
+    public void deleteAccount(UUID id) {
+        User user = getUserById(id);
+        user.setStatus(UserStatus.DELETED);
+        userRepository.save(user);
+        logger.info("User account {} marked as deleted", id);
     }
 }

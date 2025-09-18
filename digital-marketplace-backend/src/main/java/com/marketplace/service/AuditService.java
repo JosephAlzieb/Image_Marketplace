@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.marketplace.model.entity.*;
 import org.springframework.scheduling.annotation.Async;
 
+import java.util.UUID;
+
 @Service
 public class AuditService {
 
@@ -81,5 +83,10 @@ public class AuditService {
     public void logTransactionRefunded(Transaction transaction, User requester, String reason) {
         auditLogger.info("Refund audit: transaction={}, requester={}, reason={}",
                 transaction.getId(), requester.getId(), reason);
+    }
+
+    public void logAction(String adminUserUpdate, UUID userId, String s) {
+        auditLogger.info("USER_ACTION: Admin {} performed action '{}' on user {}",
+                adminUserUpdate, s, userId);
     }
 }

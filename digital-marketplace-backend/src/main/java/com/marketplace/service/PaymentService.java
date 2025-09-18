@@ -19,4 +19,8 @@ public class PaymentService {
         // TODO: Stripe-Integration
         return "re_" + System.currentTimeMillis();
     }
+
+    public void handleStripeWebhook(String payload, String sigHeader) {
+
+    }
 }

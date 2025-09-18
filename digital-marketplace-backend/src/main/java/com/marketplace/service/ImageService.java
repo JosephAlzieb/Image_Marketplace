@@ -492,4 +492,27 @@ public class ImageService {
 
         return response;
     }
+
+    public Page<ImageResponse> getUserPublicImages(UUID userId, Pageable pageable) {
+        Page<Image> images = imageRepository.findByUploaderIdAndIsAvailableTrueAndIsMatureContentFalse(userId, pageable);
+        return images.map(this::mapToResponse);
+    }
+
+    public boolean toggleLike(UUID imageId, UUID id) {
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Image", "id", imageId));
+        User user = userService.getUserById(id);
+
+        if (image.getLikedBy().contains(user)) {
+            image.getLikedBy().remove(user);
+            image.decrementLikeCount();
+            imageRepository.save(image);
+            return false;
+        } else {
+            image.getLikedBy().add(user);
+            image.incrementLikeCount();
+            imageRepository.save(image);
+            return true;
+        }
+    }
 }
