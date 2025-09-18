@@ -1,5 +1,6 @@
 package com.marketplace.service;
 
+import com.marketplace.config.ApplicationPropertiesProvider;
 import com.marketplace.model.entity.AuctionBid;
 import com.marketplace.model.entity.Image;
 import com.marketplace.model.entity.Transaction;
@@ -7,7 +8,6 @@ import com.marketplace.model.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -30,14 +30,8 @@ public class EmailService {
     @Autowired
     private TemplateEngine templateEngine;
 
-    @Value("${app.mail.from:noreply@marketplace.com}")
-    private String fromEmail;
-
-    @Value("${marketplace.frontend-url:http://localhost:3000}")
-    private String frontendUrl;
-
-    @Value("${app.name:Digital Marketplace}")
-    private String appName;
+    @Autowired
+    private ApplicationPropertiesProvider appProperties;
 
     /**
      * Send welcome email to new user
@@ -47,14 +41,14 @@ public class EmailService {
         try {
             Context context = new Context();
             context.setVariable("user", user);
-            context.setVariable("appName", appName);
-            context.setVariable("loginUrl", frontendUrl + "/login");
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("loginUrl", appProperties.getFrontendUrl() + "/login");
 
             String htmlContent = templateEngine.process("emails/welcome", context);
 
             sendHtmlEmail(
                     user.getEmail(),
-                    "Welcome to " + appName + "!",
+                    "Welcome to " + appProperties.getName() + "!",
                     htmlContent
             );
 
@@ -73,14 +67,14 @@ public class EmailService {
         try {
             Context context = new Context();
             context.setVariable("user", user);
-            context.setVariable("appName", appName);
-            context.setVariable("dashboardUrl", frontendUrl + "/seller/dashboard");
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("dashboardUrl", appProperties.getFrontendUrl() + "/seller/dashboard");
 
             String htmlContent = templateEngine.process("emails/seller-welcome", context);
 
             sendHtmlEmail(
                     user.getEmail(),
-                    "Welcome to " + appName + " Seller Program!",
+                    "Welcome to " + appProperties.getName() + " Seller Program!",
                     htmlContent
             );
 
@@ -101,8 +95,8 @@ public class EmailService {
             context.setVariable("buyer", buyer);
             context.setVariable("transaction", transaction);
             context.setVariable("image", transaction.getImage());
-            context.setVariable("appName", appName);
-            context.setVariable("downloadUrl", frontendUrl + "/downloads/" + transaction.getImage().getId());
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("downloadUrl", appProperties.getFrontendUrl() + "/downloads/" + transaction.getImage().getId());
 
             String htmlContent = templateEngine.process("emails/purchase-confirmation", context);
 
@@ -131,8 +125,8 @@ public class EmailService {
             context.setVariable("transaction", transaction);
             context.setVariable("image", transaction.getImage());
             context.setVariable("buyer", transaction.getBuyer());
-            context.setVariable("appName", appName);
-            context.setVariable("salesUrl", frontendUrl + "/seller/sales");
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("salesUrl", appProperties.getFrontendUrl() + "/seller/sales");
 
             String htmlContent = templateEngine.process("emails/sale-notification", context);
 
@@ -160,8 +154,8 @@ public class EmailService {
             context.setVariable("winner", winner);
             context.setVariable("image", image);
             context.setVariable("bid", winningBid);
-            context.setVariable("appName", appName);
-            context.setVariable("checkoutUrl", frontendUrl + "/checkout/auction/" + image.getId());
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("checkoutUrl", appProperties.getFrontendUrl() + "/checkout/auction/" + image.getId());
 
             String htmlContent = templateEngine.process("emails/auction-winner", context);
 
@@ -190,8 +184,8 @@ public class EmailService {
             context.setVariable("image", image);
             context.setVariable("winningBid", winningBid);
             context.setVariable("reason", reason);
-            context.setVariable("appName", appName);
-            context.setVariable("auctionsUrl", frontendUrl + "/auctions");
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("auctionsUrl", appProperties.getFrontendUrl() + "/auctions");
 
             String htmlContent = templateEngine.process("emails/auction-lost", context);
 
@@ -219,7 +213,7 @@ public class EmailService {
             context.setVariable("buyer", buyer);
             context.setVariable("transaction", transaction);
             context.setVariable("refundAmount", refundAmount);
-            context.setVariable("appName", appName);
+            context.setVariable("appName", appProperties.getName());
 
             String htmlContent = templateEngine.process("emails/refund-confirmation", context);
 
@@ -246,14 +240,14 @@ public class EmailService {
             Context context = new Context();
             context.setVariable("user", user);
             context.setVariable("reason", reason);
-            context.setVariable("appName", appName);
-            context.setVariable("supportUrl", frontendUrl + "/support");
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("supportUrl", appProperties.getFrontendUrl() + "/support");
 
             String htmlContent = templateEngine.process("emails/account-suspension", context);
 
             sendHtmlEmail(
                     user.getEmail(),
-                    "Account Suspension - " + appName,
+                    "Account Suspension - " + appProperties.getName(),
                     htmlContent
             );
 
@@ -273,14 +267,14 @@ public class EmailService {
         try {
             Context context = new Context();
             context.setVariable("user", user);
-            context.setVariable("appName", appName);
-            context.setVariable("loginUrl", frontendUrl + "/login");
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("loginUrl", appProperties.getFrontendUrl() + "/login");
 
             String htmlContent = templateEngine.process("emails/account-reactivation", context);
 
             sendHtmlEmail(
                     user.getEmail(),
-                    "Account Reactivated - " + appName,
+                    "Account Reactivated - " + appProperties.getName(),
                     htmlContent
             );
 
@@ -301,8 +295,8 @@ public class EmailService {
             Context context = new Context();
             context.setVariable("seller", seller);
             context.setVariable("image", image);
-            context.setVariable("appName", appName);
-            context.setVariable("relistUrl", frontendUrl + "/seller/images/" + image.getId() + "/relist");
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("relistUrl", appProperties.getFrontendUrl() + "/seller/images/" + image.getId() + "/relist");
 
             String htmlContent = templateEngine.process("emails/auction-no-bids", context);
 
@@ -330,7 +324,7 @@ public class EmailService {
             context.setVariable("seller", seller);
             context.setVariable("image", image);
             context.setVariable("highestBid", highestBid);
-            context.setVariable("appName", appName);
+            context.setVariable("appName", appProperties.getName());
 
             String htmlContent = templateEngine.process("emails/auction-reserve-not-met", context);
 
@@ -355,7 +349,7 @@ public class EmailService {
     public void sendAuctionErrorEmail(User user, Image image, String error) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
+            message.setFrom(appProperties.getMail().getFrom());
             message.setTo(user.getEmail());
             message.setSubject("Auction Processing Error - " + image.getTitle());
             message.setText(String.format(
@@ -364,7 +358,7 @@ public class EmailService {
                             "Error: %s\n\n" +
                             "Our support team has been notified and will contact you shortly.\n\n" +
                             "Best regards,\n%s Team",
-                    user.getFullName(), image.getTitle(), error, appName
+                    user.getFullName(), image.getTitle(), error, appProperties.getName()
             ));
 
             mailSender.send(message);
@@ -387,7 +381,7 @@ public class EmailService {
             context.setVariable("seller", seller);
             context.setVariable("transaction", transaction);
             context.setVariable("refundAmount", refundAmount);
-            context.setVariable("appName", appName);
+            context.setVariable("appName", appProperties.getName());
 
             String htmlContent = templateEngine.process("emails/refund-notification", context);
 
@@ -405,6 +399,84 @@ public class EmailService {
         }
     }
 
+    /**
+     * Send email verification email
+     */
+    @Async
+    public void sendEmailVerificationEmail(User user, String verificationToken) {
+        try {
+            Context context = new Context();
+            context.setVariable("user", user);
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("verificationUrl", appProperties.getFrontendUrl() + "/verify-email?token=" + verificationToken);
+
+            String htmlContent = templateEngine.process("emails/email-verification", context);
+
+            sendHtmlEmail(
+                    user.getEmail(),
+                    "Verify Your Email - " + appProperties.getName(),
+                    htmlContent
+            );
+
+            logger.info("Email verification email sent to user: {}", user.getEmail());
+
+        } catch (Exception e) {
+            logger.error("Failed to send email verification email to user {}: {}", user.getEmail(), e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Send password reset email
+     */
+    @Async
+    public void sendPasswordResetEmail(User user, String resetToken) {
+        try {
+            Context context = new Context();
+            context.setVariable("user", user);
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("resetUrl", appProperties.getFrontendUrl() + "/reset-password?token=" + resetToken);
+
+            String htmlContent = templateEngine.process("emails/password-reset", context);
+
+            sendHtmlEmail(
+                    user.getEmail(),
+                    "Password Reset Request - " + appProperties.getName(),
+                    htmlContent
+            );
+
+            logger.info("Password reset email sent to user: {}", user.getEmail());
+
+        } catch (Exception e) {
+            logger.error("Failed to send password reset email to user {}: {}", user.getEmail(), e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Send password change confirmation email
+     */
+    @Async
+    public void sendPasswordChangeConfirmationEmail(User user) {
+        try {
+            Context context = new Context();
+            context.setVariable("user", user);
+            context.setVariable("appName", appProperties.getName());
+            context.setVariable("supportUrl", appProperties.getFrontendUrl() + "/support");
+
+            String htmlContent = templateEngine.process("emails/password-change-confirmation", context);
+
+            sendHtmlEmail(
+                    user.getEmail(),
+                    "Password Changed - " + appProperties.getName(),
+                    htmlContent
+            );
+
+            logger.info("Password change confirmation email sent to user: {}", user.getEmail());
+
+        } catch (Exception e) {
+            logger.error("Failed to send password change confirmation email to user {}: {}", user.getEmail(), e.getMessage(), e);
+        }
+    }
+
     // Private helper methods
 
     private void sendHtmlEmail(String to, String subject, String htmlContent) {
@@ -412,7 +484,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom(fromEmail);
+            helper.setFrom(appProperties.getMail().getFrom());
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
@@ -429,7 +501,7 @@ public class EmailService {
     private void sendSimpleEmail(String to, String subject, String text) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
+            message.setFrom(appProperties.getMail().getFrom());
             message.setTo(to);
             message.setSubject(subject);
             message.setText(text);

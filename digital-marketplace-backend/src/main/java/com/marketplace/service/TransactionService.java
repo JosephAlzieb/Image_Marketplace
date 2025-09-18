@@ -1,5 +1,6 @@
 package com.marketplace.service;
 
+import com.marketplace.config.ApplicationPropertiesProvider;
 import com.marketplace.exception.BadRequestException;
 import com.marketplace.exception.PaymentException;
 import com.marketplace.exception.ResourceNotFoundException;
@@ -12,13 +13,13 @@ import com.marketplace.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -53,12 +54,9 @@ public class TransactionService {
     @Autowired
     private NotificationService notificationService;
     
-    @Value("${marketplace.commission-rate:0.10}")
-    private BigDecimal platformCommissionRate;
-    
-    @Value("${marketplace.processing-fee-rate:0.029}")
-    private BigDecimal processingFeeRate; // 2.9% Stripe fee
-    
+    @Autowired
+    private ApplicationPropertiesProvider appProperties;
+
     /**
      * Initiate purchase of an image
      */
@@ -344,11 +342,11 @@ public class TransactionService {
         BigDecimal grossAmount = transaction.getGrossAmount();
         
         // Calculate platform commission
-        BigDecimal commission = grossAmount.multiply(platformCommissionRate);
+        BigDecimal commission = calculatePlatformCommission(grossAmount);
         transaction.setPlatformCommission(commission);
         
         // Calculate processing fee
-        BigDecimal processingFee = grossAmount.multiply(processingFeeRate);
+        BigDecimal processingFee = calculateProcessingFee(grossAmount);
         transaction.setProcessingFee(processingFee);
         
         // Calculate tax amount
@@ -375,6 +373,16 @@ public class TransactionService {
         transaction.setNetToSeller(netToSeller);
     }
     
+    private BigDecimal calculatePlatformCommission(BigDecimal grossAmount) {
+        return grossAmount.multiply(BigDecimal.valueOf(appProperties.getCommissionRate()))
+                .setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateProcessingFee(BigDecimal grossAmount) {
+        return grossAmount.multiply(BigDecimal.valueOf(appProperties.getProcessingFeeRate()))
+                .setScale(2, RoundingMode.HALF_UP);
+    }
+
     private void transferImageOwnership(Transaction transaction) {
         Image image = transaction.getImage();
         User previousOwner = image.getCurrentOwner();

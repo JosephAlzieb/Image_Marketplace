@@ -1,15 +1,13 @@
 package com.marketplace.annotation;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import java.lang.annotation.*;
 
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-/**
- * Custom annotation to access the currently authenticated user in controller methods.
- * Usage: public ResponseEntity<?> someMethod(@CurrentUser UserPrincipal currentUser) { ... }
- */
-@Target(ElementType.PARAMETER)
+@Target({ElementType.PARAMETER, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@AuthenticationPrincipal
 public @interface CurrentUser {
     boolean required() default true;
 }
